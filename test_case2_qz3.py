@@ -64,43 +64,40 @@ best_acc = -1.0
 best_mod = None
 best_h_param = None
 
-for h_params in h_param_comb:
+def model_bias(h_param_comb, X_test, X_dev, X_dev_test, y_train, X_train):
+    for h_params in h_param_comb:
 
-        # Create a classifier: a support vector classifier
-        clf = svm.SVC()
+            # Create a classifier: a support vector classifier
+            clf = svm.SVC()
 
-        hyper_params = h_params
-        clf.set_params(**hyper_params)
+            hyper_params = h_params
+            clf.set_params(**hyper_params)
 
-        # Learn the digits on the train subset
-        clf.fit(X_train, y_train)
+            # Learn the digits on the train subset
+            clf.fit(X_train, y_train)
 
-        predicted_train = clf.predict(X_dev_test)
-        predicted_dev = clf.predict(X_dev)
-        predicted_test = clf.predict(X_test)
+            predicted_train = clf.predict(X_dev_test)
+            predicted_dev = clf.predict(X_dev)
+            predicted_test = clf.predict(X_test)
 
-        accu = metrics.accuracy_score(y_pred = predicted_dev, y_true = y_dev)
-        accu_test = metrics.accuracy_score(y_pred = predicted_test, y_true = y_test)
-        accu_train = metrics.accuracy_score(y_pred = predicted_train, y_true = y_dev_test)
+            accu = metrics.accuracy_score(y_pred = predicted_dev, y_true = y_dev)
+            accu_test = metrics.accuracy_score(y_pred = predicted_test, y_true = y_test)
+            accu_train = metrics.accuracy_score(y_pred = predicted_train, y_true = y_dev_test)
 
-        if accu > best_acc:
-            best_acc = accu
-            best_mod = clf
-            best_h_param  = h_params
-            print("New best params:"+str(h_params))
-            print("New best train accuracy:"+str(accu_train))
-            print("New best dev accuracy:"+str(accu))
-            print("New best test accuracy:"+str(accu_test))
-
-
-        # Predict the value of the digit on the test subset
-predicted = best_mod.predict(X_test)
+            if accu > best_acc:
+                best_acc = accu
+                best_mod = clf
+                best_h_param  = h_params
+                print("New best params:"+str(h_params))
+                print("New best train accuracy:"+str(accu_train))
+                print("New best dev accuracy:"+str(accu))
+                print("New best test accuracy:"+str(accu_test))
 
 
-print(
-    f"Classification report for classifier {clf}:\n"
-    f"{metrics.classification_report(y_test, predicted)}\n"
-)
+            # Predict the value of the digit on the test subset
+    predicted = best_mod.predict(X_test)
+    return predicted
 
-print("Best hyperparameters are:")
-print(h_params)
+
+def test_case1():
+    assert model_bias(h_param_comb, X_test, X_dev, X_dev_test, y_train, X_train) == model_bias(h_param_comb, X_test, X_dev, X_dev_test, y_train, X_train)
